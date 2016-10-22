@@ -5,10 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-
-import java.io.IOException;
+import android.widget.Toast;
 
 import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ScanActivity extends AppCompatActivity {
@@ -41,7 +42,7 @@ public class ScanActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 String uuid = intent.getStringExtra("SCAN_RESULT");
                 String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
-                Log.i("Scan!!", "contents: " + uuid + " format: " + format);
+                Toast.makeText(getApplicationContext(), uuid + "got scanned", Toast.LENGTH_SHORT).show();
                 checkinUser(uuid);
             } else if (resultCode == RESULT_CANCELED) {
                 Log.i("Scan!!", "Cancelled");
@@ -50,15 +51,22 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     private void checkinUser(String uuid) {
-        try {
-            Response<ResponseBody> execute = ApiProvider.getServiceApi().checkIn(uuid).execute();
-            if (execute.code() == 200)
-                Log.i("!!Scan!!", "Success");
-            else
-                Log.i("!!Scan!!", "Invalid User");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d("!!Scan!!", "OMG@!!!!");
-        }
+        ApiProvider.getServiceApi()
+                .checkIn(uuid).enqueue(
+                new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.code() == 200)
+                            Toast.makeText(getApplicationContext(), "SUCCESS! Welcome to Event.", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(getApplicationContext(), "Invalid User", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.e("Scan", "Service Hitting Failed", t);
+                    }
+                });
+
     }
 }

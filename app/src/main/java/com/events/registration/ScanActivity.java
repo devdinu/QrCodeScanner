@@ -6,6 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
+import retrofit2.Response;
+
 public class ScanActivity extends AppCompatActivity {
     View scanQrView;
 
@@ -23,7 +28,6 @@ public class ScanActivity extends AppCompatActivity {
         });
     }
 
-
     public void scanQrCode() {
         Intent intent = new Intent("com.google.zxing.client.android.SCAN");
         intent.putExtra("com.google.zxing.client.android.SCAN.SCAN_MODE", "QR_CODE_MODE");
@@ -35,12 +39,26 @@ public class ScanActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
-                String contents = intent.getStringExtra("SCAN_RESULT");
+                String uuid = intent.getStringExtra("SCAN_RESULT");
                 String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
-                Log.i("Scan!!", "contents: " + contents + " format: " + format);
+                Log.i("Scan!!", "contents: " + uuid + " format: " + format);
+                checkinUser(uuid);
             } else if (resultCode == RESULT_CANCELED) {
                 Log.i("Scan!!", "Cancelled");
             }
+        }
+    }
+
+    private void checkinUser(String uuid) {
+        try {
+            Response<ResponseBody> execute = ApiProvider.getServiceApi().checkIn(uuid).execute();
+            if (execute.code() == 200)
+                Log.i("!!Scan!!", "Success");
+            else
+                Log.i("!!Scan!!", "Invalid User");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("!!Scan!!", "OMG@!!!!");
         }
     }
 }

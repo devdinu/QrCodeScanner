@@ -19,6 +19,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = rootProject.file("build/EventCheckinApp.apk");
+        }
+    }
+
+    productFlavors {
+        dev {
+            def serviceUrl = System.getenv("EVENT_SERVICE_URL") ?: "http://10.0.2.2:3000"
+            buildConfigField "String", "EventServiceUrl", "\"$serviceUrl\""
+        }
+    }
 }
 
 
@@ -26,6 +39,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided "org.projectlombok:lombok:1.16.6"
     compile 'com.android.support:appcompat-v7:23.4.0'
+    provided 'org.glassfish:javax.annotation:10.0-b28'
     compile group: 'com.squareup.retrofit2', name: 'converter-gson', version: '2.1.0'
     compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.1.0'
 }

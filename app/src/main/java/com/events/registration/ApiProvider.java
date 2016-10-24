@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiProvider {
 
     public static EventRegistration getServiceApi() {
-        String BASE_URL = "http://10.0.2.2:3000/";
+        String BASE_URL = BuildConfig.EventServiceUrl;
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())

@@ -28,7 +28,7 @@ android {
 
     productFlavors {
         dev {
-            def serviceUrl = System.getenv("EVENT_SERVICE_URL") ?: "http://10.0.2.2:3000"
+            def serviceUrl = System.getenv("EVENT_SERVICE_URL") ?: "https://tw-event-checkin.herokuapp.com"
             buildConfigField "String", "EventServiceUrl", "\"$serviceUrl\""
         }
     }
